@@ -81,7 +81,6 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
               initial: (_) => LoaderWidget(),
               loading: (_) => LoaderWidget(),
               success: (loadedData) {
-                print("SUCCESS: ${loadedData.empDetails}");
                 if (loadedData.empDetails != null) {
                   nameController.text = loadedData.empDetails!.empName!;
                   roleController.text = loadedData.empDetails!.empRole!;
