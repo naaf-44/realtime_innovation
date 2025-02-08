@@ -29,7 +29,7 @@ class AddEmpCubit extends Cubit<AddEmpState> {
       } else {
         List<EmpDetailsModel> empList = [generateEmpData(empDetailsModel)];
         await CommonFunction.saveData(empList, handler!);
-      } 
+      }
       if(id != "0") {
         emit(AddEmpState.saveEmp("Employee data has been edited"));
       } else {
@@ -47,7 +47,6 @@ class AddEmpCubit extends Cubit<AddEmpState> {
       if (data!.isNotEmpty) {
         List<dynamic> jsonList = jsonDecode(data);
         List<EmpDetailsModel>? empList = jsonList.map((json) => EmpDetailsModel.fromJson(json)).toList();
-        print("ID: $id");
         EmpDetailsModel? empDetail = empList.where((data) => data.empId == id).firstOrNull;
         emit(AddEmpState.success(empDetail));
       } else {

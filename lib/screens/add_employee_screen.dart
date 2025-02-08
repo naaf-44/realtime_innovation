@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:realtime_innovation/bloc/add_emp/add_emp_cubit.dart';
+import 'package:realtime_innovation/bloc/emp_details/emp_details_cubit.dart';
 import 'package:realtime_innovation/model_class/emp_details/emp_details_model.dart';
 import 'package:realtime_innovation/utils/app_colors.dart';
 import 'package:realtime_innovation/utils/app_data.dart';
@@ -49,6 +50,14 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    roleController.dispose();
+    fromDataController.dispose();
+    toDateController.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -56,6 +65,13 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
             text: title, textType: TextType.appBarTitle),
         backgroundColor: AppColors.primaryColor,
         automaticallyImplyLeading: false,
+        actions: [
+          if(widget.id != "0")
+            IconButton(onPressed: (){
+              context.read<EmpDetailsCubit>().getEmpDetails(id: widget.id);
+              context.replace("/");
+            }, icon: Icon(Icons.delete), color: AppColors.whiteColor)
+        ],
       ),
       body: BlocBuilder<AddEmpCubit, AddEmpState>(
         builder: (context, state) {
@@ -232,6 +248,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          scrollable: true,
             content: StatefulBuilder(builder: (context, stateSetter) {
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -337,24 +354,15 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
               ),
               const SizedBox(height: 0),
               Divider(color: AppColors.greyColor),
+              if(ScreenUtils.getWidth(context) < 400)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: showSelectedDate(isFromDate, selectedDate),
+                ),
               Row(
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_month_outlined,
-                            color: AppColors.primaryColor),
-                        const SizedBox(width: 5),
-                        AppText(
-                            text: selectedDate == null
-                                ? !isFromDate
-                                    ? "No Date"
-                                    : ""
-                                : DateFormat("d MMM yyyy")
-                                    .format(selectedDate!),
-                            textType: TextType.title),
-                      ],
-                    ),
+                    child: ScreenUtils.getWidth(context) >= 400 ? showSelectedDate(isFromDate, selectedDate) :SizedBox(),
                   ),
                   AppButton(
                       text: "Cancel",
@@ -376,6 +384,24 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
           );
         }));
       },
+    );
+  }
+
+  Widget showSelectedDate(bool isFromDate, DateTime? selectedDate){
+    return Row(
+      children: [
+        Icon(Icons.calendar_month_outlined,
+            color: AppColors.primaryColor),
+        const SizedBox(width: 5),
+        AppText(
+            text: selectedDate == null
+                ? !isFromDate
+                ? "No Date"
+                : ""
+                : DateFormat("d MMM yyyy")
+                .format(selectedDate),
+            textType: TextType.title),
+      ],
     );
   }
 
