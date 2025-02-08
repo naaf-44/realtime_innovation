@@ -42,6 +42,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AddEmpCubit>().getEmpDetails(widget.id!);
     });
+    print("ID: ${widget.id}");
     if(widget.id == "0") {
       title = "Add Employee Details";
     } else {
@@ -57,6 +58,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
     fromDataController.dispose();
     toDateController.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,22 +81,27 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
               initial: (_) => LoaderWidget(),
               loading: (_) => LoaderWidget(),
               success: (loadedData) {
+                print("SUCCESS: ${loadedData.empDetails}");
                 if (loadedData.empDetails != null) {
                   nameController.text = loadedData.empDetails!.empName!;
                   roleController.text = loadedData.empDetails!.empRole!;
                   fromDataController.text = loadedData.empDetails!.fromDate!;
                   toDateController.text = loadedData.empDetails!.toDate!;
                   empId = loadedData.empDetails!.empId!;
+                } else {
+                  nameController.clear();
+                  roleController.clear();
+                  fromDataController.clear();
+                  toDateController.text = "No Date";
                 }
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
                   child: Form(
                     key: formKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        InputWidget(controller: nameController, hintText: "Employee Name"),
+                        InputWidget(controller: nameController, hintText: "Employee Name", validationMessage: "Please enter the name"),
                         const SizedBox(height: 20),
                         InputWidget(
                             readOnly: true,
@@ -103,11 +110,11 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                               openBottomNavigator(context);
                             },
                             controller: roleController,
+                            validationMessage: "Please select the role"
                         ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
-
                             Expanded(
                               child: InputWidget(
                                 controller: fromDataController,
@@ -115,11 +122,13 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                                 hintText: "Today",
                                 onTap: () {
                                   showDatePickerDialog(context, true);
-                                },),
+                                },
+                                validationMessage: "Please select the date"
+                              ),
                             ),
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                                  const EdgeInsets.symmetric(horizontal: 6.0),
                               child: Icon(Icons.arrow_forward,
                                   color: AppColors.primaryColor),
                             ),

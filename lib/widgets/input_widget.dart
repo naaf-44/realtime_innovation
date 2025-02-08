@@ -6,7 +6,8 @@ class InputWidget extends StatelessWidget {
   final String? hintText;
   final Function()? onTap;
   final bool? readOnly;
-  const InputWidget({super.key, this.controller, this.hintText, this.onTap, this.readOnly});
+  final String? validationMessage;
+  const InputWidget({super.key, this.controller, this.hintText, this.onTap, this.readOnly, this.validationMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +35,14 @@ class InputWidget extends StatelessWidget {
             color: AppColors.primaryColor),
       ),
       validator: (val) {
-        if(val == null || val.isEmpty) {
-          return "Please enter the name";
+        if(validationMessage != null) {
+          if (val == null || val.isEmpty) {
+            return validationMessage;
+          }
         }
         return null;
       },
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      autovalidateMode: AutovalidateMode.onUnfocus,
     );
   }
 }
